@@ -1,6 +1,9 @@
 [연습문제 5-1]
 
 1. 이름에 소문자 v가 포함된 모든 사원의 사번, 이름, 부서명을 조회하는 쿼리문을 작성한다.
+-- 문자 패턴 검색 : LIKE, %, _
+-- 대소문자 구분
+-- 사원정보 테이블 + 부서 정보 테이블
 
 SELECT E.EMPLOYEE_ID, E.FIRST_NAME, D.DEPARTMENT_NAME
 FROM EMPLOYEES E, DEPARTMENTS D
@@ -12,6 +15,7 @@ AND E.FIRST_NAME LIKE '%v%';
 -- COMMISSION_PCT : NULL (판매부서가 아닌 사원들)
 -- NULL 처리 : 비교대상 X => NVL(), NVL2()
 -- 커미션 금액 : SALARY * COMMISSION_PCT
+-- 커미션 받는 사원 : 35명(1명이 부서가 없지만)
 
 SELECT E.EMPLOYEE_ID, E.FIRST_NAME, E.SALARY, E.COMMISSION_PCT * E.SALARY AS COMM_PCT, D.DEPARTMENT_NAME
 FROM EMPLOYEES E, DEPARTMENTS D
@@ -19,6 +23,8 @@ WHERE E.DEPARTMENT_ID = D.DEPARTMENT_ID(+)
 AND E.COMMISSION_PCT IS NOT NULL;
 
 3. 각 부서의 부서코드, 부서명, 위치코드, 도시명, 국가코드, 국가명을 조회하는 쿼리문을 작성한다.
+-- 기준 테이블 : 부서정보 테이블(부서코드, 부서명, 위치코드)
+-- 대상테이블 : 위치 테이블(도시명, 국가코드), 국가정보 테이블(국가명)
 
 SELECT D.DEPARTMENT_ID, D.DEPARTMENT_NAME, L.LOCATION_ID,
        L.CITY, L.COUNTRY_ID, C.COUNTRY_NAME

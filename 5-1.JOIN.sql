@@ -8,6 +8,7 @@
 -- JOIN 조건 : 둘 이상의 테이블의 관계를 맺을 때, 기준이 되는 컬럼을 지정 ==> 보통, WHERE절에 기술
 -- JOIN 조건을 기술하지 않을 때 잘못된 결과가 발생하는데, 이걸 카테시안 곱(=합성곱)이라고 함
 -- 오류는 안남 ==> 예측되는 데이터 보다 많다면 의심
+-- CROSS JOIN 이라고도 함.  (테이블의 데이터(=ROW)가 적다면 문제X, 많다면 => 대기시간, 연산 오래걸림
 
 /*
 SELECT 컬럼명1, 컬럼명2, ...
@@ -219,7 +220,7 @@ ORDER BY 1;
 -- 5.6.1 INNER JOIN <---> 오라클 JOIN에서 INNER JOIN은 사실, EQUI-JOIN! 
 -- FROM절에 INNER JOIN을 사용하고, JOIN 조건(=WHERE)은 ON 절에 명시한다.
 
-[예제 5-12](모든) 사원의 사번, 이름, 부서코드, 부서명 정보를 조회한다.
+[예제 5-12](모든) 사원의 사번, 이름, 부서코드, 부서명 정보를 조회
 
 -- 오라클 JOIN
 SELECT  e.employee_id, e.first_name, e.department_id,
@@ -247,7 +248,7 @@ ORDER BY 1; -- 105명
 SELECT  e.employee_id, e.first_name, department_id,
         d.department_name
 FROM    employees e INNER JOIN departments d 
-USING   department_id       -- 1) ON 대신 USING (공통 컬럼명만)
+USING   (department_id)       -- 1) ON 대신 USING (공통 컬럼명만)
 --AND     e.manager_id IS NOT NULL   -- ※오류
 ORDER BY 1; -- 105명
 --ORA-00933: SQL 명령어가 올바르게 종료되지 않았습니다 ==> SELECT 절도 확인!
@@ -256,14 +257,63 @@ ORDER BY 1; -- 105명
 -- ORA-00906: 누락된 좌괄호    ==> USING (공통컬럼)
 -- 00906. 00000 -  "missing left parenthesis"
 
+[예제 5-13]
+SELECT E.EMPLOYEE_ID, E.FIRST_NAME, DEPARTMENT_ID,
+       D.DEPARTMENT_NAME
+FROM   EMPLOYEES E INNER JOIN DEPARTMENTS D -- INNER가 옵션
+USING  (DEPARTMENT_ID)
+WHERE  E.MANAGER_ID IS NOT NULL
+ORDER BY 1;
+
+--  오라클 조인 : Cartesian Product, EQUI JOIN(=), NON-EQUI JOIN(>, >=, <, <= , BETWEEN, IN), OUTER JOIN(+)
+-- ANSI JOIN    :  (CROSS JOIN)    ,  INNER JOIN,                  OUTER JOIN
+
+[예제 5-15]  사원의 사번, 이름, 부서코드, 부서명, 위치코드, 도시정보를 조회
+-- 오라클 JOIN / ANSI JOIN
+
+SELECT  e.employee_id, e.first_name, e.department_id,
+        d.department_name,
+        l.city
+FROM    employees e INNER JOIN departments d
+ON      e.department_id = d.department_id
+INNER JOIN locations l
+ON      d.location_id = l.location_id;
+
+SELECT  e.employee_id, e.first_name, department_id,
+        d.department_name,
+        city
+FROM    employees e INNER JOIN departments d
+USING      (department_id)
+INNER JOIN locations l
+USING      (location_id);
+
+-- ORACLE JOIN
+SELECT  e.employee_id, e.first_name, d.department_id,
+        d.department_name,
+        l.city
+FROM    employees e, departments d, locations l
+WHERE   e.department_id = d.department_id
+AND     d.location_id = l.location_id; -- 106rows
 
 -- 5.6.2 OUTER JOIN <---> 오라클 JOIN에서 (+)를 사용하는 OUTER JOIN과 같은 기능을 하는 ANSI JOIN
+-- 오라클 JOIN의 OUTER JOIN은 조인 조건절에 모두 (+) 붙였음.
+-- ANSI JOIN의 OUTER JOIN은 FROM절에 [LEFT|RIGHT|(FULL)] OUTER JOIN을 사용하고,
+-- JOIN 조건은 ON절에 명시한다.
 
+[예제 5-16] 사원의 사번, 이름, 부서코드, 부서명 정보를 조회
+SELECT E.EMPLOYEE_ID, E.FIRST_NAME, E.DEPARTMENT_ID,
+       D.DEPARTMENT_NAME
+FROM EMPLOYEES E FULL OUTER JOIN DEPARTMENTS D -- INNER: 생략가능
+ON   E.DEPARTMENT_ID = D.DEPARTMENT_ID  -- WHERE 대신 ON 또는 USING(공통 컬럼명)
+ORDER BY 1;
 
+-- OUTER JOIN으로 FULL 생략시 발생
+-- ORA-00905: 누락된 키워드
+-- 00905. 00000 -  "missing keyword"
 
-
-
-
+-- [LEFT|RIGHT|(FULL)]
+-- 1) ON 절에 조인조건 또는
+-- 2) USING 절에 조인조건 명시
 
 -- 5.6 ANSI JOIN  /  ANSI 협회에서 만든 표준 JOIN 식(ORACLE외에도 MYSQL, CUBRID, 기타 RDBMS 공통 JOIN)
 
