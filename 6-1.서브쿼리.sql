@@ -144,16 +144,71 @@ WHERE DEPARTMENT_ID IN (50, 80);
 -- 1. 영국의 위치코드 조회
 SELECT LOCATION_ID
 FROM LOCATIONS
-WHERE COUNTRY_ID = 'UK';
+WHERE COUNTRY_ID = 'UK'; -- 2400, 2500, 2600 : 영국에 부서 여러개~
 
 -- 2. 서브쿼리
+SELECT  DEPARTMENT_ID, LOCATION_ID, DEPARTMENT_NAME
+FROM    DEPARTMENTS
+--WHERE   LOCATION_ID = (2400, 2500, 2600); 
+WHERE   LOCATION_ID = 2400
+OR      LOCATION_ID = 2500
+OR      LOCATION_ID = 2600;
+-- WHERE    LOCATION_ID IN (2400, 2500, 2600)
+-- ORA-01797: 연산자의 뒤에 ANY 또는 ALL을 지정해 주십시오  ==> = ANY () 나 = ALL () 형태로 작성
+-- 01797. 00000 -  "this operator must be followed by ANY or ALL"
+
+-- 6.2.2 ANY(=SOME) 연산자
+-- 서브쿼리 결과값 중 어느 하나만 만족되더라도 행을 반환한다.
+-- =만 사용할 때
 SELECT DEPARTMENT_ID, LOCATION_ID, DEPARTMENT_NAME
 FROM DEPARTMENTS
-WHERE LOCATION_ID  = ANY (2400, 2500, 2600);
+WHERE LOCATION_ID = ANY(SELECT LOCATION_ID
+                        FROM LOCATIONS
+                        WHERE COUNTRY_ID = 'UK');
+
+[예제 6-6] 70번 부서원의 급여보다 높은 급여를 받는 사원의 사번, 이름, 부서번호, 급여를 급여 순으로 조회
+-- 서브쿼리 사용 안할 때
+-- 1. 70번 부서원 급여를 조회
+SELECT DEPARTMENT_ID
+FROM EMPLOYEES
+WHERE DEPARTMENT_ID = 70;
+
+-- 1.1 사원수
+SELECT DEPARTMENT_ID, COUNT(*) AS CNT
+FROM EMPLOYEES
+GROUP BY DEPARTMENT_ID
+ORDER BY 1;
+
+SELECT EMPLOYEE_ID, FIRST_NAME, DEPARTMENT_ID, SALARY
+FROM EMPLOYEES
+WHERE SALARY > ANY (SELECT  MIN(SALARY)
+                    FROM EMPLOYEES
+                    WHERE DEPARTMENT_ID = 50)
+ORDER BY 4;
+-- ORA-01427: 단일 행 하위 질의에 2개 이상의 행이 리턴되었습니다.
+-- 01427. 00000 -  "single-row subquery returns more than one row"
+
+/* 같은 기능하는 다중 행 서브쿼리 연산자/연산기호
+= ANY    VS    OR 연산자, IN 연산자
+> ANY    VS    > MIN
+< ANY    VS    < MAX
+= ALL
+> ALL
+< ALL
+*/
+
+[예제 6-3]
+SELECT EMPLOYEE_ID, FIRST_NAME, DEPARTMENT_ID, SALARY
+FROM EMPLOYEES
+WHERE SALARY < ANY (SELECT MAX(SALARY)
+                    FROM EMPLOYEES
+                    WHERE DEPARTMENT_ID = 50)
+ORDER BY 4;
 
 
--- 6.2.2 NOT 연산자
--- 6.2.3 ANY(=SOME) 연산자
+
+-- 6.2.3 NOT 연산자
+
 -- 6.2.4 ALL 연산자
 -- 6.2.5 EXISTS 연산자
 
