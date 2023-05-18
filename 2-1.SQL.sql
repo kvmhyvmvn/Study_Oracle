@@ -1,22 +1,22 @@
--- 1장. DBMS
--- Database Management System: 데이터 관리 시스템
--- 데이터: 가공되지않은 값, 사실(fact)
--- 정보: 데이터를 가공하거나 의사결정에 필요한 지식, 지혜
--- * 용어사전(naver.com) 검색 권장.
+-- 2장. SQL
+-- 에스큐엘 or 시퀄~ 이라고 읽음
+-- Sturctured Query Language (=구조화된 질의어) : 데이터를 조회, 저장, 삭제하는데 사용하는 질의언어
+-- 구조화된~ : 일정한 사용 패턴 있다! (패턴을 익히면 쉽다)
+--  개발자 --> SQL --> Oracle DBMS : 데이터 조회/저장/삭제 요청 ---> 데이터를 처리 --> 그 결과
 
--- 오라클 DBMS: 관계형 데이터베이스 (Relational DB)
--- 1970 E.F Codd 박사에 의해 RDB 개념이 제안 --> 지금까지 사용하고 있는 대다수의 DBMS 모델
--- 최근에 데이터가 많아지고 다양한 요구사항이 생겨서, 기존의 DBMS로는 처리가 어렵거나 불가한 경우
--- Document, Gragh, Time Series, Search Engin 등의 모델이 등장하기 시작하였음.
+-- SQL의 구분 : 보통은~
+-- 0) DQL (Data Query Language) : 데이터를 조회하는 명령어
 
--- 왜 오라클인가?
--- 시장에서 오라클사의 입지, 그간의 성과가 인정(50년 이상 지속), 업계 1위
--- Oracle, MySQL 모두 미국 오라클사의 DBMS
+-- 1) DML (Data Manipulation Language) : 데이터를 저장(새 데이터, 기존데이터) 삭제하는 명령어
+-- 2) DDL (Data Definion Language) : 데이터를 저장하는 테이블등의 객체를 생성, 삭제, 수정하는 명령어
+-- 3) DCL (Data Control Language) : 데이터와 관련된 사용자 권한을 부여, 회수하는 명령어
+-- 4) DTL (Data Transaction Language) : 데이터 처리 트랜잭션 관련 명령어
+--     └ ex> grant connect, create table, dba to hanul; // revoke     
 
--- 버전: 11g, 설치 : 21c, 최신 버전 : 23c (개발자들에게만 먼저 오픈, 테스트 중)
--- 코드명: grid g, cloud c <--> 기존 DBMS 구축 기술에 클라우드 기술 더해서 만든 제품!
--- 아직도 11g가 시장에서 여전히 높은 점유율을 가지고 있음 ==> 비용 문제
--- 차이점1: 샘플 데이터가 21c 이전까지는 오라클에 포함되어있다가, 21c 이후부터는 개별 설치
--- 차이점2: 머신러닝, 인공지능 기술이 21c부터 포함되었음. 그리고, Javascript 문법을 지원함.
 
--- 검색: oracle dbms market share, oracle version history(timeline), ... dbms ranking..
+-- SQL 작성 방법
+-- 1) 대,소문자를 구분하지 않고 작성
+-- 2) 공백(spacebar, tab)이 SQL 처리에 영향을 주지 않음
+-- 3) 문장의 마지막에 세미콜론(;)을 기술하여 명령의 끝을 표시
+-- 4) 쿼리 실행은 CTRL+ENTER 또는 블럭씌워서 CTRL+ENTER
+-- 5) SQLPLUS에서도 가능! (SQLDEVELOPER만 쓰지 않아도..DBeaver, Toad for Oracle, HeidiSQL,...)

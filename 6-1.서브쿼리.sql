@@ -387,4 +387,43 @@ ORDER BY TO_CHAR(hire_date, 'MM');
 -- 업무 ==> 집계성 테이블은 실제 DB에 반영하고, 기업 경영하는데 필요한 데이터로 누적해서 관리해야함!
 -- 테이블의 데이터가 엄청나게 많을때, 조인등으로 연산하면 처리속도/지연시간 ==> 테이블의 일부만 추출할때 사용
 
+-- ROWNUM 또는 ROW_NUMBER()  : 테이블에 존재하지 않는 의사컬럼(Pseudo Column)으로, SELECT절과
+-- ============= 랭크(순위) 관련 함수 ================
+-- ROW_NUMBER () OVER (rank_clause) : 1,2,3,4,5,... (동순위를 표시 x)
+-- RANK() : 일반적인 순위 함수    :  1,2,3,3,5,... (동순위를 표시, 다음순위+1 표시 )
+-- DENSE_RANK() : RANK 함수처럼 순위 함수   : 1,2,3,3,4,... (동순위 표시, 다음순위 표시) 
+
+-- AVERAGE_RANK() : 평균값을 이용한 순위 함수 : 1,2,3.5,3.5,5,.. (동순위 실수값 표시, 다음순위+1 표시)
+-- └ 오라클 21c 에서는 실행안됨.(제거되거나 다른 함수로 변경되었을 가능성)
+
+-- WHERE 절에 사용한다.
+-- 쿼리문의 실행 결과로 나온 각 행에 대한 순서값을 나타낸다.
+
+SELECT ROWNUM AS RANK, EMPLOYEE_ID, FIRST_NAME, SALARY
+FROM EMPLOYEES
+WHERE ROWNUM <= 5
+ORDER BY SALARY DESC;
+
+[예제 6-27] 사번, 이름을 10건 조회한다.
+SELECT EMPLOYEE_ID, FIRST_NAME
+FROM EMPLOYEES
+WHERE ROWNUM <= 10;
+
+[예제 6-28]
+SELECT ROWNUM AS rank, e.*
+FROM    (   SELECT  employee_id, last_name, salary
+            FROM    employees   
+            ORDER BY    salary DESC ) e
+WHERE   ROWNUM <= 10;       
+
+-- 순위함수를 사용할때
+SELECT  employee_id, last_name, salary,
+        ROWNUM AS,                                                   -- 1,2,3,4,.. + 인라인뷰 서브쿼리
+        RANK() OVER(ORDER BY salary DESC) AS rank1,            -- 1,2,3,3,5,6,....
+        DENSE_RANK() OVER(ORDER BY salary DESC) AS rank2      -- 1,2,3,3,4,5,6....
+--        AVERAGE_RANK() OVER(ORDER BY salary DESC) AS salary_rank   1,2,3.5,3.5,5,6,7...
+FROM    employees;
+
+-- 오라클21c 에서는 ORA-00904: "AVERAGE_RANK": 부적합한 식별자 <--> AVERAGE_RANK() 함수 사용 
+-- 이름이 바꼇거나,..어떠한 이유로 사용이 되지 않는지 확인 필요!!
 
