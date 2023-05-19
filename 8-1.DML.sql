@@ -294,7 +294,7 @@ FROM    emp;
 
 
 
--- [예제 8.6] ==> [예제 8.13] : 서브쿼리로 처리
+-- [예제 8-6] ==> [예제 8.13] : 서브쿼리로 처리
 -- 부서코드만 삽입, 나머지 NULL --> 각 컬럼별로 서브쿼리로 처리!!
 -- month_salary2 를 만들어서, 
 CREATE TABLE month_salary2 (
@@ -305,7 +305,7 @@ CREATE TABLE month_salary2 (
 );
 
 -- 사원테이블에서 사원들의 소속 부서코드만 삽입
-INSERT INTO month_salary2 (dept_id)
+INSERT INTO month_salary2 (dept_id) -- ITAS
 SELECT  department_id
 FROM    employees
 WHERE   department_id IS NOT NULL -- 킴벌리는 부서가 없는 사원
@@ -328,14 +328,53 @@ SET emp_count = ( SELECT COUNT(*)
     avg_sal = ( SELECT AVG(e.salary)
                   FROM  employees e
                   WHERE e.department_id = m.dept_id
-                  GROUP BY e.department_id )
+                  GROUP BY e.department_id );
                   
 -- month_salary 처럼 month_salary2를 서브쿼리로 처리
 -- ※ 서브쿼리가 반복됨..WHERE절, GROUP BY 절! ==> 다중컬럼 서브쿼리로 처리하면 훨씬 간결하다!
 -- 다중 컬럼 서브쿼리 ==> UPDATE 문에서 활용!
 
-    
+[예제 8-14] MONTH_SALARY2의 EMP_COUNT, SUM_SAL, AVG_SAL 컬럼을 다중 컬럼 서브쿼리를 활용해
+EMPLOYEES의 부서별 집계된 데이터를 업데이트 (단, 급여평균은 정수로 표시)
 
+UPDATE MONTH_SALARY2 M
+SET (EMP_COUNT, SUM_SAL, AVG_SAL) = (SELECT COUNT(*), SUM(SALARY), ROUND(AVG(SALARY))
+                                     FROM EMPLOYEES E
+                                     WHERE E.DEPARTMENT_ID = M.DEPT_ID
+                                     GROUP BY DEPARTMENT_ID
+                                     );
+-- 확인                                     
+SELECT *
+FROM    month_salary2;
+
+-- 커밋 OR 롤백
+COMMIT;
+
+-- 8.3 데이터 삭제 DELETE
+-- 테이블의 행 데이터를 삭제하는 기본 문법
+-- WHERE 절의 조건에 일치하는 행 데이터를 삭제한다. (WHERE절 생략시 모든 행 데이터가 삭제됨)
+/*
+DELTE FROM 테이블명
+WHERE 조건;
+*/
+
+[예제 8-15] EMP 테이블에서 60번 부서의 사원정보 삭제
+-- 조회
+SELECT *
+FROM EMP
+ORDER BY DEPT_ID;
+
+-- 삭제
+DELETE FROM EMP
+WHERE DEPT_ID = 60; -- 5 ROWS DELETED, 58 ROWS REMAIN.
+
+-- WHERE절 생략시 모든 데이터가 삭제되므로 주의
+DELETE FROM EMP;
+
+SELECT *
+FROM EMP;
+
+COMMIT; -- 58ROWS REMAIN
 
 
 
